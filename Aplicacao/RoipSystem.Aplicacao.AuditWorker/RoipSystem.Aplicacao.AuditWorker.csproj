@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-RoipSystem.Aplicacao.AuditWorker-a06b533c-9a8b-4aa8-9848-d5671457b2c4</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="14.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\RoipSystem.Infra\RoipSystem.Infra.csproj" />
+    <ProjectReference Include="..\..\RoipSystem.Dominio\RoipSystem.Dominio.csproj" />
+    <ProjectReference Include="..\..\RoipSystem.Framework\RoipSystem.Framework.csproj" />
+    <ProjectReference Include="..\..\RoipSystem.Dominio.Mediador\RoipSystem.Dominio.Mediador.csproj" />
+  </ItemGroup>
+</Project>
