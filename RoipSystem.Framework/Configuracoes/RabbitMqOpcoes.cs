@@ -4,16 +4,19 @@ public class RabbitMqOpcoes
 {
     public const string Secao = "RabbitMq";
 
-    public string Host { get; set; } = "localhost";
-    public string Usuario { get; set; } = "guest";
-    public string Senha { get; set; } = "guest";
-    public ushort PrefetchCount { get; set; } = 10;
-    public int MaxRetries { get; set; } = 3;
+    public string Host { get; set; } = string.Empty;
+    public string Usuario { get; set; } = string.Empty;
+    public string Senha { get; set; } = string.Empty;
+    public ushort PrefetchCount { get; set; }
+    public int MaxRetries { get; set; }
 
-    public string ExchangePrincipal { get; set; } = "roip.core";
-    public string ExchangeDlx { get; set; } = "roip.dlx";
-    public string FilaDeadLetter { get; set; } = "q.roip.deadletter";
-    public string RoutingKeyDeadLetter { get; set; } = "deadletter";
-    public int MensagemTtlMs { get; set; } = 60000;
-    public byte MaxPriority { get; set; } = 10;
+    public string ExchangePrincipal { get; set; } = string.Empty;
+    public string ExchangeDlx { get; set; } = string.Empty;
+    public string FilaDeadLetter { get; set; } = string.Empty;
+    public string RoutingKeyDeadLetter { get; set; } = string.Empty;
+    public int MensagemTtlMs { get; set; }
+    public byte MaxPriority { get; set; }
+    
+    public bool SslEnabled { get; set; }
+    public string SslServerName { get; set; } = string.Empty;
 }

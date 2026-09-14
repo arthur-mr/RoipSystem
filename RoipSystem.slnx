@@ -3,6 +3,7 @@
     <Project Path="Aplicacao/RoipSystem.Aplicacao.Api/RoipSystem.Aplicacao.Api.csproj" />
     <Project Path="Aplicacao/RoipSystem.Aplicacao.AuditWorker/RoipSystem.Aplicacao.AuditWorker.csproj" />
     <Project Path="Aplicacao/RoipSystem.Aplicacao.DispatchWorker/RoipSystem.Aplicacao.DispatchWorker.csproj" />
+    <Project Path="Aplicacao/RoipSystem.Console/RoipSystem.Console.csproj" />
   </Folder>
   <Folder Name="/Dominio/">
     <Project Path="RoipSystem.Dominio.Mediador/RoipSystem.Dominio.Mediador.csproj" />

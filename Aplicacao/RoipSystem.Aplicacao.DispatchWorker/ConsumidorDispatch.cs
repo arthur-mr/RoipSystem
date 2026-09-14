@@ -9,7 +9,7 @@ using RoipSystem.Framework.RabbitMq;
 
 namespace RoipSystem.Aplicacao.DispatchWorker;
 
-public class ConsumidorDispatch<T>(
+public abstract class ConsumidorDispatch<T>(
     FabricaConexaoRabbitMq fabricaConexao,
     IOptions<RabbitMqOpcoes> opcoes,
     IMediator mediator,
@@ -17,6 +17,12 @@ public class ConsumidorDispatch<T>(
 {
     protected override async Task<bool> ProcessarMensagemAsync(T mensagem, CancellationToken cancellationToken)
     {
+        if (mensagem.RadioId == "FALHA")
+        {
+            logger.LogWarning("Simulando falha proposital para testar resiliência (DLQ/Retries) para o RadioId: FALHA.");
+            return false;
+        }
+
         if (!Enum.TryParse<TipoEvento>(mensagem.TipoEvento, out var tipoEvento))
         {
             logger.LogError("TipoEvento inválido recebido: '{TipoEvento}'. Descartando para DLQ.", mensagem.TipoEvento);
@@ -35,6 +41,10 @@ public class ConsumidorDispatch<T>(
         var comando = new ProcessarEventoRadioComando(contrato);
 
         await mediator.Send(comando, cancellationToken);
+        
+        // Simula tempo de processamento para permitir acúmulo na fila e teste de prioridade
+        await Task.Delay(20, cancellationToken);
+        
         return true;
     }
 }

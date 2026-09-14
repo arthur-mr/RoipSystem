@@ -19,6 +19,15 @@ public sealed class FabricaConexaoRabbitMq : IAsyncDisposable
             UserName = cfg.Usuario,
             Password = cfg.Senha
         };
+
+        if (cfg.SslEnabled)
+        {
+            fabrica.Ssl.Enabled = true;
+            if (!string.IsNullOrWhiteSpace(cfg.SslServerName))
+            {
+                fabrica.Ssl.ServerName = cfg.SslServerName;
+            }
+        }
     }
 
     public async Task<IConnection> ObterConexaoAsync(CancellationToken cancellationToken = default)

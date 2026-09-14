@@ -17,6 +17,12 @@ public sealed class ConsumidorAuditoria(
 {
     protected override async Task<bool> ProcessarMensagemAsync(MensagemVozAudit mensagem, CancellationToken cancellationToken)
     {
+        if (mensagem.RadioId == "FALHA")
+        {
+            logger.LogWarning("Simulando falha proposital de auditoria para testar resiliência (DLQ/Retries) para o RadioId: FALHA.");
+            return false;
+        }
+
         if (!Enum.TryParse<TipoEvento>(mensagem.TipoEvento, out var tipoEvento))
         {
             logger.LogError("TipoEvento inválido recebido: '{TipoEvento}'. Descartando para DLQ.", mensagem.TipoEvento);

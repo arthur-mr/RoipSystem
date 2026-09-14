@@ -4,8 +4,11 @@ using RoipSystem.Aplicacao.Api.ViewModels;
 using RoipSystem.Dominio.Contratos;
 using RoipSystem.Dominio.Mediador.Comandos;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace RoipSystem.Aplicacao.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/radio/eventos")]
 public sealed class RadioEventosController(IMediator mediator) : ControllerBase
