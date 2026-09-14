@@ -1,4 +1,4 @@
-using RoipSystem.Dominio.Modelos.Records;
+using RoipSystem.Dominio.Modelos;
 
 namespace RoipSystem.Dominio.Interfaces;
 

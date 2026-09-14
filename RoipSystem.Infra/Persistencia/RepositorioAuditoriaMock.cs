@@ -1,17 +1,12 @@
 using Microsoft.Extensions.Logging;
 using RoipSystem.Dominio.Interfaces;
-using RoipSystem.Dominio.Modelos.Records;
+using RoipSystem.Dominio.Modelos;
 
 namespace RoipSystem.Infra.Persistencia;
 
-public sealed class RepositorioAuditoriaMock : IRepositorioAuditoria
+public sealed class RepositorioAuditoriaMock(ILogger<RepositorioAuditoriaMock> logger) : IRepositorioAuditoria
 {
-    private readonly ILogger<RepositorioAuditoriaMock> logger;
-
-    public RepositorioAuditoriaMock(ILogger<RepositorioAuditoriaMock> logger)
-    {
-        this.logger = logger;
-    }
+    private readonly ILogger<RepositorioAuditoriaMock> logger = logger;
 
     public Task SalvarAuditoriaAsync(EventoRadio eventoRadio)
     {

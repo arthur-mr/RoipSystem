@@ -2,33 +2,36 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RoipSystem.Framework.Atributos;
 using RoipSystem.Framework.Configuracoes;
+using RoipSystem.Framework.Interfaces;
+using System.Reflection;
 using System.Text.Json;
-
-using Microsoft.Extensions.Hosting;
 
 namespace RoipSystem.Framework.RabbitMq;
 
-public abstract class ConsumidorRabbitMqBase<T> : BackgroundService where T : class
+public abstract class ConsumidorRabbitMqBase<T>(
+    FabricaConexaoRabbitMq fabricaConexao,
+    IOptions<RabbitMqOpcoes> opcoes,
+    ILogger logger) : IConsumidor where T : class
 {
-    private readonly FabricaConexaoRabbitMq fabricaConexao;
-    private readonly ushort prefetchCount;
-    private readonly int maxRetries;
-    private readonly ILogger logger;
+    private readonly ushort prefetchCount = opcoes.Value.PrefetchCount;
+    private readonly int maxRetries = opcoes.Value.MaxRetries;
+    private readonly ILogger logger = logger;
     private IChannel? canal;
+    private string? nomeFilaCache;
 
-    protected ConsumidorRabbitMqBase(
-        FabricaConexaoRabbitMq fabricaConexao,
-        IOptions<RabbitMqOpcoes> opcoes,
-        ILogger logger)
+    private string ObterNomeFila()
     {
-        this.fabricaConexao = fabricaConexao;
-        this.prefetchCount = opcoes.Value.PrefetchCount;
-        this.maxRetries = opcoes.Value.MaxRetries;
-        this.logger = logger;
+        if (nomeFilaCache != null) return nomeFilaCache;
+        var atributo = typeof(T).GetCustomAttribute<FilaRabbitMqAttribute>();
+        if (atributo == null || string.IsNullOrWhiteSpace(atributo.NomeFila))
+            throw new InvalidOperationException($"A classe de mensagem {typeof(T).Name} precisa estar decorada com [FilaRabbitMq(\"nome-da-fila\")].");
+        nomeFilaCache = atributo.NomeFila;
+        return nomeFilaCache;
     }
 
-    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+    public async Task IniciarAsync(CancellationToken cancellationToken)
     {
         var conexao = await fabricaConexao.ObterConexaoAsync(cancellationToken);
         canal = await conexao.CreateChannelAsync(cancellationToken: cancellationToken);
@@ -39,7 +42,65 @@ public abstract class ConsumidorRabbitMqBase<T> : BackgroundService where T : cl
             global: false,
             cancellationToken: cancellationToken);
 
-        string nomeFila = FilaMensagemCache<T>.NomeFila;
+        var rabbitOpcoes = opcoes.Value;
+
+        await canal.ExchangeDeclareAsync(
+            exchange: rabbitOpcoes.ExchangeDlx,
+            type: ExchangeType.Direct,
+            durable: true,
+            autoDelete: false,
+            cancellationToken: cancellationToken);
+
+        await canal.QueueDeclareAsync(
+            queue: rabbitOpcoes.FilaDeadLetter,
+            durable: true,
+            exclusive: false,
+            autoDelete: false,
+            cancellationToken: cancellationToken);
+
+        await canal.QueueBindAsync(
+            queue: rabbitOpcoes.FilaDeadLetter,
+            exchange: rabbitOpcoes.ExchangeDlx,
+            routingKey: rabbitOpcoes.RoutingKeyDeadLetter,
+            cancellationToken: cancellationToken);
+
+        await canal.ExchangeDeclareAsync(
+            exchange: rabbitOpcoes.ExchangePrincipal,
+            type: ExchangeType.Topic,
+            durable: true,
+            autoDelete: false,
+            cancellationToken: cancellationToken);
+
+        var atributo = typeof(T).GetCustomAttribute<FilaRabbitMqAttribute>();
+        if (atributo != null)
+        {
+            var argumentos = new Dictionary<string, object?>
+            {
+                { "x-dead-letter-exchange", rabbitOpcoes.ExchangeDlx },
+                { "x-dead-letter-routing-key", rabbitOpcoes.RoutingKeyDeadLetter },
+                { "x-message-ttl", rabbitOpcoes.MensagemTtlMs },
+                { "x-max-priority", rabbitOpcoes.MaxPriority }
+            };
+
+            await canal.QueueDeclareAsync(
+                queue: atributo.NomeFila,
+                durable: true,
+                exclusive: false,
+                autoDelete: false,
+                arguments: argumentos,
+                cancellationToken: cancellationToken);
+
+            if (!string.IsNullOrWhiteSpace(atributo.RoutingKeyBinding))
+            {
+                await canal.QueueBindAsync(
+                    queue: atributo.NomeFila,
+                    exchange: rabbitOpcoes.ExchangePrincipal,
+                    routingKey: atributo.RoutingKeyBinding,
+                    cancellationToken: cancellationToken);
+            }
+        }
+
+        string nomeFila = ObterNomeFila();
 
         var consumidor = new AsyncEventingBasicConsumer(canal);
         consumidor.ReceivedAsync += async (_, ea) =>
@@ -137,14 +198,13 @@ public abstract class ConsumidorRabbitMqBase<T> : BackgroundService where T : cl
 
     protected abstract Task<bool> ProcessarMensagemAsync(T mensagem, CancellationToken cancellationToken);
 
-    public override async Task StopAsync(CancellationToken cancellationToken)
+    public async Task PararAsync(CancellationToken cancellationToken = default)
     {
         if (canal != null && canal.IsOpen)
         {
-            logger.LogInformation("Encerrando canal RabbitMQ da fila {Fila}", FilaMensagemCache<T>.NomeFila);
+            logger.LogInformation("Encerrando canal RabbitMQ da fila {Fila}", ObterNomeFila());
             await canal.CloseAsync(cancellationToken: cancellationToken);
             await canal.DisposeAsync();
         }
-        await base.StopAsync(cancellationToken);
     }
 }

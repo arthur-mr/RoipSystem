@@ -1,5 +1,4 @@
 using RoipSystem.Dominio.Mediador.Comandos;
-using RoipSystem.Infra.Mensageria;
 using RoipSystem.Infra.Modulos;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,11 +13,6 @@ builder.Services.AddMediatR(cfg =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var topologia = scope.ServiceProvider.GetRequiredService<ConstrutorTopologiaRabbitMq>();
-    await topologia.ConstruirAsync();
-}
 
 app.MapControllers();
 

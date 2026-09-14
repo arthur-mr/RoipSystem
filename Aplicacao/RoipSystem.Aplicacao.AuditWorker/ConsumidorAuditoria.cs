@@ -1,30 +1,20 @@
 using MediatR;
 using Microsoft.Extensions.Options;
+using RoipSystem.Dominio.Contratos;
 using RoipSystem.Dominio.Enums;
 using RoipSystem.Dominio.Mediador.Comandos;
-using RoipSystem.Dominio.Mediador.Contratos;
 using RoipSystem.Framework.Configuracoes;
 using RoipSystem.Framework.Mensagens;
 using RoipSystem.Framework.RabbitMq;
 
 namespace RoipSystem.Aplicacao.AuditWorker;
 
-public sealed class ConsumidorAuditoria : ConsumidorRabbitMqBase<MensagemVozAudit>
+public sealed class ConsumidorAuditoria(
+    FabricaConexaoRabbitMq fabricaConexao,
+    IOptions<RabbitMqOpcoes> opcoes,
+    IMediator mediator,
+    ILogger<ConsumidorAuditoria> logger) : ConsumidorRabbitMqBase<MensagemVozAudit>(fabricaConexao, opcoes, logger)
 {
-    private readonly IMediator mediator;
-    private readonly ILogger<ConsumidorAuditoria> logger;
-
-    public ConsumidorAuditoria(
-        FabricaConexaoRabbitMq fabricaConexao,
-        IOptions<RabbitMqOpcoes> opcoes,
-        IMediator mediator,
-        ILogger<ConsumidorAuditoria> logger)
-        : base(fabricaConexao, opcoes, logger)
-    {
-        this.mediator = mediator;
-        this.logger = logger;
-    }
-
     protected override async Task<bool> ProcessarMensagemAsync(MensagemVozAudit mensagem, CancellationToken cancellationToken)
     {
         if (!Enum.TryParse<TipoEvento>(mensagem.TipoEvento, out var tipoEvento))

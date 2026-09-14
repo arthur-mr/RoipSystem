@@ -1,19 +1,12 @@
 using MediatR;
 using RoipSystem.Dominio.Interfaces;
 using RoipSystem.Dominio.Mediador.Comandos;
-using RoipSystem.Dominio.Modelos.Records;
+using RoipSystem.Dominio.Modelos;
 
 namespace RoipSystem.Dominio.Mediador.Handlers;
 
-public sealed class SalvarAuditoriaHandler : IRequestHandler<SalvarAuditoriaComando>
+internal sealed class SalvarAuditoriaHandler(IRepositorioAuditoria repositorio) : IRequestHandler<SalvarAuditoriaComando>
 {
-    private readonly IRepositorioAuditoria repositorio;
-
-    public SalvarAuditoriaHandler(IRepositorioAuditoria repositorio)
-    {
-        this.repositorio = repositorio;
-    }
-
     public async Task Handle(SalvarAuditoriaComando request, CancellationToken cancellationToken)
     {
         var eventoRadio = new EventoRadio(

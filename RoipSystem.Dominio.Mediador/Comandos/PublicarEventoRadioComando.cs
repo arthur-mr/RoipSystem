@@ -1,5 +1,5 @@
 using MediatR;
-using RoipSystem.Dominio.Mediador.Contratos;
+using RoipSystem.Dominio.Contratos;
 
 namespace RoipSystem.Dominio.Mediador.Comandos;
 

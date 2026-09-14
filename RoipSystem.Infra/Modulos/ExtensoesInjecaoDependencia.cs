@@ -1,10 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using RoipSystem.Dominio.Interfaces;
-using RoipSystem.Dominio.Servicos;
+using RoipSystem.Dominio.Servicos.Servicos;
 using RoipSystem.Framework.Configuracoes;
 using RoipSystem.Framework.Interfaces;
 using RoipSystem.Framework.RabbitMq;
-using RoipSystem.Infra.Mensageria;
 using RoipSystem.Infra.Persistencia;
 
 namespace RoipSystem.Infra.Modulos;
@@ -26,11 +25,10 @@ public static class ExtensoesInjecaoDependencia
             return new PublicadorRabbitMq(fabrica, opcoes.ExchangePrincipal);
         });
 
-        services.AddSingleton<ConstrutorTopologiaRabbitMq>();
 
         services.AddSingleton<IRepositorioAuditoria, RepositorioAuditoriaMock>();
 
-        services.AddSingleton<IProcessadorEventoRadio, ProcessadorEventoRadio>();
+        services.AddSingleton<IEventoRadioServico, EventoRadioServico>();
 
         return services;
     }

@@ -4,17 +4,8 @@ using System.Text.Json;
 
 namespace RoipSystem.Framework.RabbitMq;
 
-public class PublicadorRabbitMq : IPublicadorMensagem
+public class PublicadorRabbitMq(FabricaConexaoRabbitMq fabricaConexao, string nomeExchange) : IPublicadorMensagem
 {
-    private readonly FabricaConexaoRabbitMq fabricaConexao;
-    private readonly string nomeExchange;
-
-    public PublicadorRabbitMq(FabricaConexaoRabbitMq fabricaConexao, string nomeExchange)
-    {
-        this.fabricaConexao = fabricaConexao;
-        this.nomeExchange = nomeExchange;
-    }
-
     public async Task PublicarAsync<T>(T mensagem, string routingKey, byte priority = 0, CancellationToken cancellationToken = default) where T : class
     {
         var conexao = await fabricaConexao.ObterConexaoAsync(cancellationToken);

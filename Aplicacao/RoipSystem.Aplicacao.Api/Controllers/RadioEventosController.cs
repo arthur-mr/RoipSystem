@@ -1,22 +1,15 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using RoipSystem.Aplicacao.Api.ViewModels;
+using RoipSystem.Dominio.Contratos;
 using RoipSystem.Dominio.Mediador.Comandos;
-using RoipSystem.Dominio.Mediador.Contratos;
 
 namespace RoipSystem.Aplicacao.Api.Controllers;
 
 [ApiController]
 [Route("api/radio/eventos")]
-public sealed class RadioEventosController : ControllerBase
+public sealed class RadioEventosController(IMediator mediator) : ControllerBase
 {
-    private readonly IMediator mediator;
-
-    public RadioEventosController(IMediator mediator)
-    {
-        this.mediator = mediator;
-    }
-
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] EventoRadioViewModel request)
     {

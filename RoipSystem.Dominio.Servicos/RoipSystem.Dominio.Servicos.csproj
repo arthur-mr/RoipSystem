@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RoipSystem.Dominio\RoipSystem.Dominio.csproj" />
+    <ProjectReference Include="..\RoipSystem.Framework\RoipSystem.Framework.csproj" />
   </ItemGroup>
 
   <ItemGroup>
