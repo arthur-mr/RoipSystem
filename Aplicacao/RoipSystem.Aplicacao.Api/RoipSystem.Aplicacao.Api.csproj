@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\RoipSystem.Dominio\RoipSystem.Dominio.csproj" />
-    <ProjectReference Include="..\..\RoipSystem.Infra\RoipSystem.Infra.csproj" />
+    <ProjectReference Include="..\..\RoipSystem.Dominio.Servicos\RoipSystem.Dominio.Servicos.csproj" />
     <ProjectReference Include="..\..\RoipSystem.Dominio.Mediador\RoipSystem.Dominio.Mediador.csproj" />
   </ItemGroup>
 

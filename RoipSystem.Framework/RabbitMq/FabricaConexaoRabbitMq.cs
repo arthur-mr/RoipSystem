@@ -10,7 +10,7 @@ public sealed class FabricaConexaoRabbitMq : IAsyncDisposable
     private readonly SemaphoreSlim semaforo = new(1, 1);
     private IConnection? conexao;
 
-    public FabricaConexaoRabbitMq(IOptions<RabbitMqOpcoes> opcoes)
+    public FabricaConexaoRabbitMq(IOptions<ConfiguracaoMensageria> opcoes)
     {
         var cfg = opcoes.Value;
         fabrica = new ConnectionFactory

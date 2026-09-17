@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.Extensions.Options;
 using RoipSystem.Dominio.Contratos;
 using RoipSystem.Dominio.Enums;
 using RoipSystem.Dominio.Mediador.Comandos;
@@ -11,9 +10,9 @@ namespace RoipSystem.Aplicacao.AuditWorker;
 
 public sealed class ConsumidorAuditoria(
     FabricaConexaoRabbitMq fabricaConexao,
-    IOptions<RabbitMqOpcoes> opcoes,
+    ConfiguracaoMensageria configuracaoMensageria,
     IMediator mediator,
-    ILogger<ConsumidorAuditoria> logger) : ConsumidorRabbitMqBase<MensagemVozAudit>(fabricaConexao, opcoes, logger)
+    ILogger<ConsumidorAuditoria> logger) : ConsumidorRabbitMqBase<MensagemVozAudit>(fabricaConexao, configuracaoMensageria, logger)
 {
     protected override async Task<bool> ProcessarMensagemAsync(MensagemVozAudit mensagem, CancellationToken cancellationToken)
     {

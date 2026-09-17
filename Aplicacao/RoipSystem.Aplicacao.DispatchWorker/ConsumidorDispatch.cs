@@ -9,13 +9,13 @@ using RoipSystem.Framework.RabbitMq;
 
 namespace RoipSystem.Aplicacao.DispatchWorker;
 
-public abstract class ConsumidorDispatch<T>(
+public sealed class ConsumidorDispatch(
     FabricaConexaoRabbitMq fabricaConexao,
-    IOptions<RabbitMqOpcoes> opcoes,
+    ConfiguracaoMensageria configuracaoMensageria,
     IMediator mediator,
-    ILogger<ConsumidorDispatch<T>> logger) : ConsumidorRabbitMqBase<T>(fabricaConexao, opcoes, logger) where T : EventoRadioMensagem
+    ILogger<ConsumidorDispatch> logger) : ConsumidorRabbitMqBase<EventoRadioMensagem>(fabricaConexao, configuracaoMensageria, logger)
 {
-    protected override async Task<bool> ProcessarMensagemAsync(T mensagem, CancellationToken cancellationToken)
+    protected override async Task<bool> ProcessarMensagemAsync(EventoRadioMensagem mensagem, CancellationToken cancellationToken)
     {
         if (mensagem.RadioId == "FALHA")
         {

@@ -12,13 +12,7 @@ public sealed class EventoRadioServico(ILogger<EventoRadioServico> logger, IPubl
 {
     public async Task PublicarEventoAsync(EventoRadioContrato contrato, CancellationToken cancellationToken)
     {
-        EventoRadioMensagem mensagem = contrato.TipoEvento switch
-        {
-            TipoEvento.Panico => new MensagemPanico(),
-            TipoEvento.Telemetria => new MensagemTelemetria(),
-            TipoEvento.Voz => new MensagemVoz(),
-            _ => new MensagemVoz()
-        };
+        EventoRadioMensagem mensagem = new EventoRadioMensagem();
 
         mensagem.Id = contrato.Id;
         mensagem.RadioId = contrato.RadioId;

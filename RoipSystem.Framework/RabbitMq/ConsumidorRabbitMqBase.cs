@@ -12,11 +12,11 @@ namespace RoipSystem.Framework.RabbitMq;
 
 public abstract class ConsumidorRabbitMqBase<T>(
     FabricaConexaoRabbitMq fabricaConexao,
-    IOptions<RabbitMqOpcoes> opcoes,
+    ConfiguracaoMensageria configuracaoMensageria,
     ILogger logger) : IConsumidor where T : class
 {
-    private readonly ushort prefetchCount = opcoes.Value.PrefetchCount;
-    private readonly int maxRetries = opcoes.Value.MaxRetries;
+    private readonly ushort prefetchCount = configuracaoMensageria.PrefetchCount;
+    private readonly int maxRetries = configuracaoMensageria.MaxRetries;
     private readonly ILogger logger = logger;
     private IChannel? canal;
     private string? nomeFilaCache;
@@ -42,30 +42,28 @@ public abstract class ConsumidorRabbitMqBase<T>(
             global: false,
             cancellationToken: cancellationToken);
 
-        var rabbitOpcoes = opcoes.Value;
-
         await canal.ExchangeDeclareAsync(
-            exchange: rabbitOpcoes.ExchangeDlx,
+            exchange: configuracaoMensageria.ExchangeDlx,
             type: ExchangeType.Direct,
             durable: true,
             autoDelete: false,
             cancellationToken: cancellationToken);
 
         await canal.QueueDeclareAsync(
-            queue: rabbitOpcoes.FilaDeadLetter,
+            queue: configuracaoMensageria.FilaDeadLetter,
             durable: true,
             exclusive: false,
             autoDelete: false,
             cancellationToken: cancellationToken);
 
         await canal.QueueBindAsync(
-            queue: rabbitOpcoes.FilaDeadLetter,
-            exchange: rabbitOpcoes.ExchangeDlx,
-            routingKey: rabbitOpcoes.RoutingKeyDeadLetter,
+            queue: configuracaoMensageria.FilaDeadLetter,
+            exchange: configuracaoMensageria.ExchangeDlx,
+            routingKey: configuracaoMensageria.RoutingKeyDeadLetter,
             cancellationToken: cancellationToken);
 
         await canal.ExchangeDeclareAsync(
-            exchange: rabbitOpcoes.ExchangePrincipal,
+            exchange: configuracaoMensageria.ExchangePrincipal,
             type: ExchangeType.Topic,
             durable: true,
             autoDelete: false,
@@ -76,10 +74,10 @@ public abstract class ConsumidorRabbitMqBase<T>(
         {
             var argumentos = new Dictionary<string, object?>
             {
-                { "x-dead-letter-exchange", rabbitOpcoes.ExchangeDlx },
-                { "x-dead-letter-routing-key", rabbitOpcoes.RoutingKeyDeadLetter },
-                { "x-message-ttl", rabbitOpcoes.MensagemTtlMs },
-                { "x-max-priority", rabbitOpcoes.MaxPriority }
+                { "x-dead-letter-exchange", configuracaoMensageria.ExchangeDlx },
+                { "x-dead-letter-routing-key", configuracaoMensageria.RoutingKeyDeadLetter },
+                { "x-message-ttl", configuracaoMensageria.MensagemTtlMs },
+                { "x-max-priority", configuracaoMensageria.MaxPriority }
             };
 
             await canal.QueueDeclareAsync(
@@ -94,7 +92,7 @@ public abstract class ConsumidorRabbitMqBase<T>(
             {
                 await canal.QueueBindAsync(
                     queue: atributo.NomeFila,
-                    exchange: rabbitOpcoes.ExchangePrincipal,
+                    exchange: configuracaoMensageria.ExchangePrincipal,
                     routingKey: atributo.RoutingKeyBinding,
                     cancellationToken: cancellationToken);
             }

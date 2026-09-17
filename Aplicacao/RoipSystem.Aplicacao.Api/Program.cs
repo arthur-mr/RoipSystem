@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using RoipSystem.Framework.RabbitMq;
 using RoipSystem.Dominio.Mediador.Comandos;
-using RoipSystem.Infra.Modulos;
+using RoipSystem.Dominio.Servicos.Modulos;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,8 +30,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddRoipInfrastructure(opcoes =>
-    builder.Configuration.GetSection("RabbitMq").Bind(opcoes));
+builder.Services.AddRoipServicos(builder.Configuration);
+builder.Services.AdicionarMensageria(builder.Configuration);
 
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(PublicarEventoRadioComando).Assembly));

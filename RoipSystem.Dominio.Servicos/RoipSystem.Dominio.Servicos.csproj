@@ -1,8 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\RoipSystem.Dominio\RoipSystem.Dominio.csproj" />
     <ProjectReference Include="..\RoipSystem.Framework\RoipSystem.Framework.csproj" />
+    <ProjectReference Include="..\RoipSystem.Infra\RoipSystem.Infra.csproj" />
   </ItemGroup>
 
   <ItemGroup>

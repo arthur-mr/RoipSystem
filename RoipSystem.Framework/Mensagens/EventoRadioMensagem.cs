@@ -1,6 +1,9 @@
+using RoipSystem.Framework.Atributos;
+
 namespace RoipSystem.Framework.Mensagens;
 
-public abstract class EventoRadioMensagem
+[FilaRabbitMq("q.roip.eventos", RoutingKeyBinding = "radio.#")]
+public class EventoRadioMensagem
 {
     public Guid Id { get; set; }
     public string RadioId { get; set; } = string.Empty;

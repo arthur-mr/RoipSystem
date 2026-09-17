@@ -1,9 +1,7 @@
 namespace RoipSystem.Framework.Configuracoes;
 
-public class RabbitMqOpcoes
+public class ConfiguracaoMensageria
 {
-    public const string Secao = "RabbitMq";
-
     public string Host { get; set; } = string.Empty;
     public string Usuario { get; set; } = string.Empty;
     public string Senha { get; set; } = string.Empty;
