@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/Aplicacao/">
+    <Project Path="Aplicacao/RoipSystem.Aplicacao.Api/RoipSystem.Aplicacao.Api.csproj" />
+    <Project Path="Aplicacao/RoipSystem.Aplicacao.AuditWorker/RoipSystem.Aplicacao.AuditWorker.csproj" />
+    <Project Path="Aplicacao/RoipSystem.Aplicacao.DispatchWorker/RoipSystem.Aplicacao.DispatchWorker.csproj" />
+    <Project Path="Aplicacao/RoipSystem.Console/RoipSystem.Console.csproj" />
+  </Folder>
+  <Folder Name="/Dominio/">
+    <Project Path="RoipSystem.Dominio.Mediador/RoipSystem.Dominio.Mediador.csproj" />
+    <Project Path="RoipSystem.Dominio.Servicos/RoipSystem.Dominio.Servicos.csproj" />
+    <Project Path="RoipSystem.Dominio/RoipSystem.Dominio.csproj" />
+  </Folder>
+  <Folder Name="/Framework/">
+    <Project Path="RoipSystem.Framework/RoipSystem.Framework.csproj" />
+  </Folder>
+  <Folder Name="/Infra/">
+    <Project Path="RoipSystem.Infra/RoipSystem.Infra.csproj" />
+  </Folder>
+</Solution>
