@@ -27,10 +27,10 @@ public static class MensageriaExtensions
         }
 
         services.AddSingleton<FabricaConexaoRabbitMq>();
-        services.AddScoped<IPublicadorMensagem>(sp => 
+        services.AddSingleton<IPublicadorMensagem>(sp => 
         {
             var fabrica = sp.GetRequiredService<FabricaConexaoRabbitMq>();
-            var cfg = sp.GetRequiredService<ConfiguracaoMensageria>();
+            var cfg = sp.GetRequiredService<RoipSystem.Framework.Configuracoes.ConfiguracaoMensageria>();
             return new PublicadorRabbitMq(fabrica, cfg.ExchangePrincipal);
         });
 
