@@ -11,11 +11,14 @@ namespace RoipSystem.Aplicacao.AuditWorker;
 public sealed class ConsumidorAuditoria(
     FabricaConexaoRabbitMq fabricaConexao,
     ConfiguracaoMensageria configuracaoMensageria,
-    IMediator mediator,
+    IServiceScopeFactory serviceScopeFactory,
     ILogger<ConsumidorAuditoria> logger) : ConsumidorRabbitMqBase<MensagemVozAudit>(fabricaConexao, configuracaoMensageria, logger)
 {
     protected override async Task<bool> ProcessarMensagemAsync(MensagemVozAudit mensagem, CancellationToken cancellationToken)
     {
+        using var escopo = serviceScopeFactory.CreateScope();
+        var mediator = escopo.ServiceProvider.GetRequiredService<IMediator>();
+
         if (mensagem.RadioId == "FALHA")
         {
             logger.LogWarning("Simulando falha proposital de auditoria para testar resiliência (DLQ/Retries) para o RadioId: FALHA.");

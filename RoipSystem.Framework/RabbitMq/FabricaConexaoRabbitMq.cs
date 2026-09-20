@@ -10,22 +10,23 @@ public sealed class FabricaConexaoRabbitMq : IAsyncDisposable
     private readonly SemaphoreSlim semaforo = new(1, 1);
     private IConnection? conexao;
 
-    public FabricaConexaoRabbitMq(IOptions<ConfiguracaoMensageria> opcoes)
+    public FabricaConexaoRabbitMq(ConfiguracaoMensageria configuracaoMensageria)
     {
-        var cfg = opcoes.Value;
         fabrica = new ConnectionFactory
         {
-            HostName = cfg.Host,
-            UserName = cfg.Usuario,
-            Password = cfg.Senha
+            Uri = new Uri(configuracaoMensageria.Uri),
+            HostName = configuracaoMensageria.Host,
+            VirtualHost = configuracaoMensageria.VirtualHost,
+            UserName = configuracaoMensageria.Usuario,
+            Password = configuracaoMensageria.Senha
         };
 
-        if (cfg.SslEnabled)
+        if (configuracaoMensageria.SslEnabled)
         {
             fabrica.Ssl.Enabled = true;
-            if (!string.IsNullOrWhiteSpace(cfg.SslServerName))
+            if (!string.IsNullOrWhiteSpace(configuracaoMensageria.SslServerName))
             {
-                fabrica.Ssl.ServerName = cfg.SslServerName;
+                fabrica.Ssl.ServerName = configuracaoMensageria.SslServerName;
             }
         }
     }

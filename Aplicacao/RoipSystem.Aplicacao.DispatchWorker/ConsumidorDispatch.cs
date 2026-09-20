@@ -12,11 +12,14 @@ namespace RoipSystem.Aplicacao.DispatchWorker;
 public sealed class ConsumidorDispatch(
     FabricaConexaoRabbitMq fabricaConexao,
     ConfiguracaoMensageria configuracaoMensageria,
-    IMediator mediator,
+    IServiceScopeFactory serviceScopeFactory,
     ILogger<ConsumidorDispatch> logger) : ConsumidorRabbitMqBase<EventoRadioMensagem>(fabricaConexao, configuracaoMensageria, logger)
 {
     protected override async Task<bool> ProcessarMensagemAsync(EventoRadioMensagem mensagem, CancellationToken cancellationToken)
     {
+        using var escopo = serviceScopeFactory.CreateScope();
+        var mediator = escopo.ServiceProvider.GetRequiredService<IMediator>();
+
         if (mensagem.RadioId == "FALHA")
         {
             logger.LogWarning("Simulando falha proposital para testar resiliência (DLQ/Retries) para o RadioId: FALHA.");
