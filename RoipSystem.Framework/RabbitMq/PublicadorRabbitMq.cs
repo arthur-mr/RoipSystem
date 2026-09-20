@@ -25,7 +25,7 @@ public class PublicadorRabbitMq : IPublicadorMensagem, IAsyncDisposable
         await semaforo.WaitAsync(cancellationToken);
         try
         {
-            if (canal == null || !canal.IsOpen)
+            if (canal is null || !canal.IsOpen)
             {
                 var conexao = await fabricaConexao.ObterConexaoAsync(cancellationToken);
                 canal = await conexao.CreateChannelAsync(cancellationToken: cancellationToken);

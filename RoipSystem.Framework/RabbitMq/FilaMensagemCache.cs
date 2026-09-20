@@ -10,7 +10,7 @@ public static class FilaMensagemCache<T> where T : class
     static FilaMensagemCache()
     {
         var atributo = typeof(T).GetCustomAttribute<FilaRabbitMqAttribute>();
-        if (atributo == null || string.IsNullOrWhiteSpace(atributo.NomeFila))
+        if (atributo is null || string.IsNullOrWhiteSpace(atributo.NomeFila))
             throw new InvalidOperationException(
                 $"A classe {typeof(T).Name} precisa estar decorada com [FilaRabbitMq(\"nome-da-fila\")].");
 

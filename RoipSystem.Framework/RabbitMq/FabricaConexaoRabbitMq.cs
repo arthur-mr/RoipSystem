@@ -39,7 +39,7 @@ public sealed class FabricaConexaoRabbitMq : IAsyncDisposable
         await semaforo.WaitAsync(cancellationToken);
         try
         {
-            if (conexao == null || !conexao.IsOpen)
+            if (conexao is null || !conexao.IsOpen)
             {
                 conexao?.Dispose();
                 conexao = await fabrica.CreateConnectionAsync(cancellationToken);

@@ -25,7 +25,7 @@ public abstract class ConsumidorRabbitMqBase<T>(
     {
         if (nomeFilaCache != null) return nomeFilaCache;
         var atributo = typeof(T).GetCustomAttribute<FilaRabbitMqAttribute>();
-        if (atributo == null || string.IsNullOrWhiteSpace(atributo.NomeFila))
+        if (atributo is null || string.IsNullOrWhiteSpace(atributo.NomeFila))
             throw new InvalidOperationException($"A classe de mensagem {typeof(T).Name} precisa estar decorada com [FilaRabbitMq(\"nome-da-fila\")].");
         nomeFilaCache = atributo.NomeFila;
         return nomeFilaCache;
@@ -146,7 +146,7 @@ public abstract class ConsumidorRabbitMqBase<T>(
 
     private async Task TratarFalhaAsync(BasicDeliverEventArgs ea, string nomeFila)
     {
-        if (canal == null) return;
+        if (canal is null) return;
 
         int retryCount = 0;
         if (ea.BasicProperties.Headers != null && ea.BasicProperties.Headers.TryGetValue("x-retry-count", out var value))
