@@ -2,7 +2,7 @@ using RoipSystem.Framework.Atributos;
 
 namespace RoipSystem.Framework.Mensagens;
 
-[FilaRabbitMq("q.roip.ptt.sinalizacao", RoutingKeyBinding = "ptt.#")]
+[FilaRabbitMq("q.roip.ptt.sinalizacao", RoutingKeyBinding = "ptt.#", IsBroadcast = true)]
 public class PttSinalMensagem
 {
     public string Evento { get; set; } = string.Empty;

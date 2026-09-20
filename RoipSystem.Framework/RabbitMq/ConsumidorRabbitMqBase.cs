@@ -27,7 +27,11 @@ public abstract class ConsumidorRabbitMqBase<T>(
         var atributo = typeof(T).GetCustomAttribute<FilaRabbitMqAttribute>();
         if (atributo is null || string.IsNullOrWhiteSpace(atributo.NomeFila))
             throw new InvalidOperationException($"A classe de mensagem {typeof(T).Name} precisa estar decorada com [FilaRabbitMq(\"nome-da-fila\")].");
-        nomeFilaCache = atributo.NomeFila;
+        
+        nomeFilaCache = atributo.IsBroadcast 
+            ? $"{atributo.NomeFila}.{Guid.NewGuid():N}" 
+            : atributo.NomeFila;
+            
         return nomeFilaCache;
     }
 
@@ -69,7 +73,9 @@ public abstract class ConsumidorRabbitMqBase<T>(
             autoDelete: false,
             cancellationToken: cancellationToken);
 
+        string nomeFila = ObterNomeFila();
         var atributo = typeof(T).GetCustomAttribute<FilaRabbitMqAttribute>();
+        
         if (atributo != null)
         {
             var argumentos = new Dictionary<string, object?>
@@ -81,24 +87,22 @@ public abstract class ConsumidorRabbitMqBase<T>(
             };
 
             await canal.QueueDeclareAsync(
-                queue: atributo.NomeFila,
-                durable: true,
-                exclusive: false,
-                autoDelete: false,
-                arguments: argumentos,
+                queue: nomeFila,
+                durable: !atributo.IsBroadcast,
+                exclusive: atributo.IsBroadcast,
+                autoDelete: atributo.IsBroadcast,
+                arguments: atributo.IsBroadcast ? null : argumentos,
                 cancellationToken: cancellationToken);
 
             if (!string.IsNullOrWhiteSpace(atributo.RoutingKeyBinding))
             {
                 await canal.QueueBindAsync(
-                    queue: atributo.NomeFila,
+                    queue: nomeFila,
                     exchange: configuracaoMensageria.ExchangePrincipal,
                     routingKey: atributo.RoutingKeyBinding,
                     cancellationToken: cancellationToken);
             }
         }
-
-        string nomeFila = ObterNomeFila();
 
         var consumidor = new AsyncEventingBasicConsumer(canal);
         consumidor.ReceivedAsync += async (_, ea) =>
@@ -189,7 +193,7 @@ public abstract class ConsumidorRabbitMqBase<T>(
         }
         else
         {
-            logger.LogError("MÃ¡ximo de retries ({MaxRetries}) atingido para fila {Fila}. Descartando para DLQ.", maxRetries, nomeFila);
+            logger.LogError("Máximo de retries ({MaxRetries}) atingido para fila {Fila}. Descartando para DLQ.", maxRetries, nomeFila);
             await canal.BasicNackAsync(ea.DeliveryTag, multiple: false, requeue: false, cancellationToken: CancellationToken.None);
         }
     }

@@ -5,4 +5,5 @@ public sealed class FilaRabbitMqAttribute(string nomeFila) : Attribute
 {
     public string NomeFila { get; } = nomeFila;
     public string RoutingKeyBinding { get; set; } = string.Empty;
+    public bool IsBroadcast { get; set; } = false;
 }
